@@ -1,0 +1,228 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Расчет дизельного двигателя</title>
+    <script type="text/javascript" src="/eel.js"></script>
+    <link rel="stylesheet" href="css/main.css" />
+    <!--Bootstrap-->
+    <link rel="stylesheet" href="libraries/bootstrap/css/bootstrap.min.css" />
+</head>
+
+<body>
+<div class="container">
+
+    <div class="row mt-2">
+        <div class="w-50">
+            <select class="custom-select w-75" id="fuel">
+                <option selected>Выберете топливо</option>
+                <option value="1">ДТ летнее</option>
+                <option value="2">ДТ зимнее</option>
+            </select>
+        </div>
+        <div class="w-50">
+            <h6>Укажите тип дизельного топлива</h6>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="w-50">
+            <select class="custom-select w-75" id="engine">
+                <option selected>Выберете двигатель</option>
+                <option value="1">Kipor KM178f</option>
+            </select>
+        </div>
+        <div class="w-50">
+            <h6>Выберете дизельный двигатель</h6>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="w-50 d-flex">
+            <input type="hidden" id="excel_constants">
+            <button class="btn btn-secondary w-75" onclick="request_filename('constants')">Открыть файл</button>
+            <div class="w-25 text-center" id="constants_status"></div>
+        </div>
+        <div class="w-50">
+            <h6>Справочные данные (excel)</h6>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="w-50 d-flex">
+            <input type="hidden" id="excel">
+            <button class="btn btn-secondary w-75" onclick="request_filename('diagrams')">Открыть файл</button>
+            <div class="w-25 text-center" id="file_status"></div>
+        </div>
+        <div class="w-50">
+            <h6>Индикаторная диаграмма (excel)</h6>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="w-50 d-flex">
+            <input class="form-control" type="text" id="t0" placeholder="Температура в градусах Цельсия">
+        </div>
+        <div class="w-50">
+            <h6>Температура конца сжатия</h6>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="w-50 d-flex">
+            <input class="form-control" type="text" id="cylinder" placeholder="Температура в градусах Цельсия">
+        </div>
+        <div class="w-50">
+            <h6>Температура головки цилиндров</h6>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="w-50 d-flex">
+            <input class="form-control" type="text" id="air" placeholder="Температура в градусах Цельсия">
+        </div>
+        <div class="w-50">
+            <h6>Температура окружающего воздуха</h6>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="w-50 d-flex">
+            <input class="form-control" type="text" id="air_p" placeholder="Давление в мм рт. ст.">
+        </div>
+        <div class="w-50">
+            <h6>Атмосферное давление</h6>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="w-50 d-flex">
+            <input class="form-control" type="text" id="rpm" placeholder="Количество оборотов в минуту">
+        </div>
+        <div class="w-50">
+            <h6>Обороты двигателя</h6>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="w-50 d-flex">
+            <input type="range" oninput="range_status()" class="custom-range w-75" min="0" max="40" step="1" id="scale" value="0">
+            <div class="w-25 text-center border border-secondary" style="background: #15e095; border-radius: 10px" id="scale_status"></div>
+        </div>
+        <div class="w-50">
+            <h6>Угол задержки самовоспламенения</h6>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="w-50 d-flex">
+            <input type="range" oninput="range_status()" class="custom-range w-75" min="0" max="3" step="0.01" id="flow" value="0">
+            <div class="w-25 text-center border border-secondary" style="background: #15e095; border-radius: 10px" id="flow_status"></div>
+        </div>
+        <div class="w-50">
+            <h6>Расход топлива</h6>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="w-50 d-flex">
+            <input type="range" oninput="range_status()" class="custom-range w-75" min="10" max="35" step="0.1" id="air_flow" value="10">
+            <div class="w-25 text-center border border-secondary" style="background: #15e095; border-radius: 10px" id="airflow_status"></div>
+        </div>
+        <div class="w-50">
+            <h6>Расход воздуха</h6>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="w-50 d-flex">
+            <input type="range" oninput="range_status()" class="custom-range w-75" min="0" max="20" step="5" id="water_percent" value="0">
+            <div class="w-25 text-center border border-secondary" style="background: #15e095; border-radius: 10px" id="water_status"></div>
+        </div>
+        <div class="w-50">
+            <h6>Объемная доля воды в топливе</h6>
+        </div>
+    </div>
+
+    <div class="row mt-4 w-100 justify-content-center">
+        <button class="btn btn-success w-25" onclick="start()">Рассчитать</button>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+
+    function range_status() {
+        let scale_status       = document.getElementById('scale_status')
+        let water_status       = document.getElementById('water_status')
+        let flow_status        = document.getElementById('flow_status')
+        let airflow_status     = document.getElementById('airflow_status')
+        let scale              = document.getElementById('scale').value
+        let flow               = document.getElementById('flow').value
+        let air_flow           = document.getElementById('air_flow').value
+        let water              = document.getElementById('water_percent').value
+        water_status.innerHTML = water+' %'
+        flow_status.innerHTML  = flow+' кг/ч'
+        airflow_status.innerHTML = air_flow + ' кг/ч'
+        scale_status.innerHTML = scale
+    }
+
+    range_status()
+
+    //Работа с excel
+
+    function request_filename(type) {//запрос на открытие диалогового окна
+        eel.get_filename(type)
+    }
+
+    eel.expose(getFile)
+    function getFile(filename,filetype) {//получаем путь к файлу из питона
+        let name_ar   = filename.split('/')
+        let full_name = name_ar[name_ar.length - 1]
+        let name      = full_name.split('.')[0]
+        let extension = full_name.split('.')[1]
+        if (filename !== '' && filetype === 'constants'){
+            document.getElementById('excel_constants').value = filename
+            document.getElementById('constants_status').innerHTML = '<img src="libraries/bootstrap-icons-1.2.1/folder-check.svg" alt="" width="32" height="32" title="Bootstrap">'
+        }
+        if (filename !== '' && filetype === 'diagrams'){
+            document.getElementById('excel').value = filename
+            document.getElementById('file_status').innerHTML = '<img src="libraries/bootstrap-icons-1.2.1/folder-check.svg" alt="" width="32" height="32" title="Bootstrap">'
+        }
+    }
+
+
+    eel.expose(highTempError)
+    function highTempError(){
+        alert('По результатам расчета получены слишком высокие значения температур. Измените входные параметры.')
+    }
+
+    function start() {//Запускаем расчет
+        //формируем массив исходных данных
+        let initial_data = {
+            constants_excel: document.getElementById('excel_constants').value,
+            diagrams_excel: document.getElementById('excel').value,
+            diagram_scale: document.getElementById('scale').value,
+            fuel_flow: document.getElementById('flow').value,
+            air_flow: document.getElementById('air_flow').value,
+            rpm: document.getElementById('rpm').value,
+            water_percent: document.getElementById('water_percent').value,
+            fuel_type: document.getElementById('fuel').value,
+            engine_type: document.getElementById('engine').value,
+            air_temperature: document.getElementById('air').value,
+            cylinder_temperature: document.getElementById('cylinder').value,
+            air_pressure: document.getElementById('air_p').value,
+            t0:document.getElementById('t0').value,
+        }
+
+        //Преобразовываем массив в json
+        let json_data = JSON.stringify(initial_data)
+
+        //Передаем массив в python
+        eel.main(json_data)
+
+    }
+
+
+</script>
